@@ -1,76 +1,84 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class MotorIO implements Runnable{
     
-    Telemetry t;
+    Telemetry telemetry;
     HardwareMap hwmap;
     
-    boolean kyss = false;
-    double extension_state = 0;
-    double close_state = 0;
-    double lift_state = 0;
-    double e1 = 0;
-    double e2 = 0;
-    double e3 = 0;
+    boolean kys_signal = false;
+    double motor_a_power = 0;
+    double motor_b_power = 0;
+    double motor_c_power = 0;
+    double motor_d_power = 0;
     
+    double motor_0_power = 0;
+    double motor_1_power = 0;
+    double motor_2_power = 0;
+    double motor_3_power = 0;
+    
+    double rotation = 0;
+
     public void kys(){
-        kyss = true;
+        kys_signal = true;
     }
     
-    public MotorIO(Telemetry t, HardwareMap hwmap){
-        this.t = t;
+    public MotorIO(Telemetry telemetry, HardwareMap hwmap){
+        this.telemetry = telemetry;
         this.hwmap = hwmap;
     }
     
-    double clamp(double i, double n, double x){
-        return Math.min(Math.max(i,n),x);
+    public void updateMotors(double motor_a_power, double motor_b_power, double motor_c_power, double motor_d_power){
+        this.motor_a_power = motor_a_power;
+        this.motor_b_power = motor_b_power;
+        this.motor_c_power = motor_c_power;
+        this.motor_d_power = motor_d_power;
     }
-
-    public void update(double extension_state, double close_state, double lift_state){
-        this.extension_state = extension_state;
-        this.close_state = close_state;
-        this.lift_state = lift_state;
-    }
-    
-    public void updateEngineState(double engine1, double engine2, double engine3){
-        this.e1 = engine1;
-        this.e2 = engine2;
-        this.e3 = engine3;
-    }
-
-    // todo: write your code here
-    
-    @Override
-    public void run(){
+    public void setRotation(double rotation){
+        this.rotation = rotation;
         
-        CRServo pidennin = (CRServo) hwmap.get("pidennin");
-        DcMotor h1 = hwmap.dcMotor.get("h1");
-        DcMotor manta = hwmap.dcMotor.get("m4");
-        DcMotor m1 = hwmap.dcMotor.get("m1");
-        DcMotor m2 = hwmap.dcMotor.get("m2");
-        DcMotor m3 = hwmap.dcMotor.get("m3");
-        
-        while(!kyss){
-            // Koodi
-            pidennin.setPower(this.extension_state);
-            h1.setPower(-this.close_state);
-            manta.setPower(-this.lift_state);
-            m1.setPower(clamp(Math.abs(e1), 0.07, 0.8) * Math.signum(e1));
-            m2.setPower(clamp(Math.abs(e2), 0.07, 0.8) * Math.signum(e2));
-            m3.setPower(clamp(Math.abs(e3), 0.07, 0.8) * Math.signum(e3));
+    }
+    public void updateMotor(double motor_power, int index){
+        if(index == 0){
+            this.motor_0_power = motor_power;
+        }
+        else if(index == 1){
+            this.motor_1_power = motor_power;
+        }
+        else if(index == 2){
+            this.motor_2_power = motor_power;
+        }
+        else if(index == 3){
+            this.motor_3_power = motor_power;
         }
     }
-    
+    @Override
+    public void run(){
+        DcMotor motor_a = hwmap.dcMotor.get("A");
+        DcMotor motor_b = hwmap.dcMotor.get("B");
+        DcMotor motor_c = hwmap.dcMotor.get("C");
+        DcMotor motor_d = hwmap.dcMotor.get("D");
+        
+        DcMotor motor_0 = hwmap.dcMotor.get("0");
+        DcMotor motor_1 = hwmap.dcMotor.get("1");
+        DcMotor motor_2 = hwmap.dcMotor.get("2");
+        DcMotor motor_3 = hwmap.dcMotor.get("3");
+
+        while(!kys_signal){/*
+            motor_a.setPower(motor_a_power + rotation);
+            motor_b.setPower(motor_b_power + rotation);
+            motor_c.setPower(motor_c_power + rotation);
+            motor_d.setPower(motor_d_power + rotation);
+            
+            motor_0.setPower(motor_0_power);
+            motor_1.setPower(motor_1_power);
+            motor_2.setPower(motor_2_power);
+            motor_3.setPower(motor_3_power);
+            */
+            motor_a.setPower(rotation);
+        }
+    }
 }
